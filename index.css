@@ -1,0 +1,9 @@
+.upgradebutton{
+    background-color: rgb(146, 160, 233);
+    border-radius: 8px;
+    padding: 5px;
+    border-color:black;
+    border-width: 3px;
+    text-align: center;
+
+}
