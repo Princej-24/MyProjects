@@ -76,6 +76,15 @@ async function sendStaticFile(res, filePath, contentType) {
   }
 }
 
+// Helper to calculate academic standing based on GPA & attendance
+function deriveAcademicStanding(gpa, attendance) {
+  const numGpa = parseFloat(gpa) || 0;
+  const numAtt = parseFloat(attendance) || 0;
+  if (numGpa >= 3.75 && numAtt >= 85) return "Dean's List";
+  if (numGpa < 2.50 || numAtt < 75) return "Academic Warning";
+  return "Good Standing";
+}
+
 // Create HTTP Server
 const server = http.createServer(async (req, res) => {
   // CORS Preflight
@@ -92,13 +101,69 @@ const server = http.createServer(async (req, res) => {
   const pathname = parsedUrl.pathname;
 
   try {
-    // REST API ENDPOINTS
+    // API: GET /api/students/stats (Analytics Summary)
+    if (pathname === '/api/students/stats' && req.method === 'GET') {
+      const students = await readStudents();
+      const total = students.length;
+      const avgGpa = total > 0 ? (students.reduce((acc, s) => acc + (parseFloat(s.gpa) || 0), 0) / total).toFixed(2) : '0.00';
+      const avgAttendance = total > 0 ? (students.reduce((acc, s) => acc + (parseFloat(s.attendance) || 0), 0) / total).toFixed(1) : '0.0';
+      const deansList = students.filter(s => s.academicStanding === "Dean's List" || parseFloat(s.gpa) >= 3.75).length;
+      const atRisk = students.filter(s => parseFloat(s.attendance) < 75 || s.academicStanding === "Academic Warning").length;
+      
+      const depts = {};
+      students.forEach(s => {
+        depts[s.department] = (depts[s.department] || 0) + 1;
+      });
+
+      return sendJSON(res, 200, {
+        success: true,
+        data: {
+          totalStudents: total,
+          averageGpa: parseFloat(avgGpa),
+          averageAttendance: parseFloat(avgAttendance),
+          deansListCount: deansList,
+          atRiskCount: atRisk,
+          departmentDistribution: depts
+        }
+      });
+    }
+
+    // API: GET /api/students/export (CSV Download)
+    if (pathname === '/api/students/export' && req.method === 'GET') {
+      const students = await readStudents();
+      const headers = ['ID', 'Roll Number', 'Name', 'Email', 'Department', 'Year', 'GPA', 'Attendance (%)', 'Academic Standing', 'Fee Status', 'Status'];
+      
+      const rows = students.map(s => [
+        s.id,
+        `"${s.rollNo}"`,
+        `"${s.name}"`,
+        `"${s.email}"`,
+        `"${s.department}"`,
+        `"${s.year || ''}"`,
+        s.gpa,
+        s.attendance || 0,
+        `"${s.academicStanding || ''}"`,
+        `"${s.feeStatus || 'Paid'}"`,
+        `"${s.status || 'Active'}"`
+      ]);
+
+      const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+
+      res.writeHead(200, {
+        'Content-Type': 'text/csv',
+        'Content-Disposition': 'attachment; filename="students_records_export.csv"',
+        'Access-Control-Allow-Origin': '*'
+      });
+      return res.end(csvContent);
+    }
+
+    // REST API ENDPOINTS FOR STUDENTS
     if (pathname.startsWith('/api/students')) {
       const students = await readStudents();
       const pathParts = pathname.split('/').filter(Boolean);
       let studentId = parsedUrl.searchParams.get('id');
       
-      if (!studentId && pathParts.length === 3) {
+      if (!studentId && pathParts.length === 3 && !['stats', 'export'].includes(pathParts[2])) {
         studentId = pathParts[2];
       }
 
@@ -111,13 +176,59 @@ const server = http.createServer(async (req, res) => {
           }
           return sendJSON(res, 200, { success: true, data: student });
         }
-        return sendJSON(res, 200, { success: true, count: students.length, data: students });
+
+        // Search, Filtering & Sorting Parameters
+        let filtered = [...students];
+        const search = parsedUrl.searchParams.get('search')?.toLowerCase().trim();
+        const dept = parsedUrl.searchParams.get('department');
+        const status = parsedUrl.searchParams.get('status');
+        const standing = parsedUrl.searchParams.get('standing');
+        const sortField = parsedUrl.searchParams.get('sort');
+        const order = parsedUrl.searchParams.get('order') === 'desc' ? -1 : 1;
+
+        if (search) {
+          filtered = filtered.filter(s => 
+            s.name.toLowerCase().includes(search) ||
+            s.rollNo.toLowerCase().includes(search) ||
+            s.email.toLowerCase().includes(search)
+          );
+        }
+
+        if (dept && dept !== 'ALL') {
+          filtered = filtered.filter(s => s.department === dept);
+        }
+
+        if (status && status !== 'ALL') {
+          filtered = filtered.filter(s => s.status === status);
+        }
+
+        if (standing && standing !== 'ALL') {
+          if (standing === 'AT_RISK') {
+            filtered = filtered.filter(s => parseFloat(s.attendance) < 75 || s.academicStanding === 'Academic Warning');
+          } else {
+            filtered = filtered.filter(s => s.academicStanding === standing);
+          }
+        }
+
+        if (sortField) {
+          filtered.sort((a, b) => {
+            let valA = a[sortField];
+            let valB = b[sortField];
+            if (typeof valA === 'string') valA = valA.toLowerCase();
+            if (typeof valB === 'string') valB = valB.toLowerCase();
+            if (valA < valB) return -1 * order;
+            if (valA > valB) return 1 * order;
+            return 0;
+          });
+        }
+
+        return sendJSON(res, 200, { success: true, count: filtered.length, data: filtered });
       }
 
       // POST /api/students (Create Student)
       if (req.method === 'POST') {
         const body = await getRequestBody(req);
-        const { rollNo, name, email, department, year, gpa, status } = body;
+        const { rollNo, name, email, department, year, gpa, attendance, academicStanding, coursesEnrolled, feeStatus, status } = body;
 
         if (!rollNo || !name || !email || !department) {
           return sendJSON(res, 400, {
@@ -127,12 +238,15 @@ const server = http.createServer(async (req, res) => {
         }
 
         // Check rollNo uniqueness
-        const existing = students.find(s => s.rollNo.toLowerCase() === rollNo.toLowerCase());
+        const existing = students.find(s => s.rollNo.toLowerCase() === String(rollNo).toLowerCase());
         if (existing) {
           return sendJSON(res, 400, { success: false, message: 'Student with this Roll Number already exists' });
         }
 
         const newId = students.length > 0 ? Math.max(...students.map(s => Number(s.id) || 0)) + 1 : 1;
+        const parsedGpa = parseFloat(gpa) || 0.0;
+        const parsedAttendance = attendance !== undefined ? parseFloat(attendance) : 85.0;
+
         const newStudent = {
           id: newId,
           rollNo: String(rollNo).trim(),
@@ -140,7 +254,11 @@ const server = http.createServer(async (req, res) => {
           email: String(email).trim(),
           department: String(department).trim(),
           year: year || '1st Year',
-          gpa: parseFloat(gpa) || 0.0,
+          gpa: parsedGpa,
+          attendance: parsedAttendance,
+          academicStanding: academicStanding || deriveAcademicStanding(parsedGpa, parsedAttendance),
+          coursesEnrolled: Array.isArray(coursesEnrolled) ? coursesEnrolled : (typeof coursesEnrolled === 'string' ? coursesEnrolled.split(',').map(c => c.trim()).filter(Boolean) : []),
+          feeStatus: feeStatus || 'Paid',
           status: status || 'Active'
         };
 
@@ -164,11 +282,25 @@ const server = http.createServer(async (req, res) => {
         }
 
         const current = students[index];
+        const newGpa = body.gpa !== undefined ? parseFloat(body.gpa) : current.gpa;
+        const newAttendance = body.attendance !== undefined ? parseFloat(body.attendance) : (current.attendance || 85.0);
+
+        let parsedCourses = current.coursesEnrolled || [];
+        if (body.coursesEnrolled !== undefined) {
+          parsedCourses = Array.isArray(body.coursesEnrolled) 
+            ? body.coursesEnrolled 
+            : (typeof body.coursesEnrolled === 'string' ? body.coursesEnrolled.split(',').map(c => c.trim()).filter(Boolean) : []);
+        }
+
         const updatedStudent = {
           ...current,
           ...body,
           id: current.id, // ID remains immutable
-          gpa: body.gpa !== undefined ? parseFloat(body.gpa) : current.gpa
+          gpa: newGpa,
+          attendance: newAttendance,
+          academicStanding: body.academicStanding || deriveAcademicStanding(newGpa, newAttendance),
+          coursesEnrolled: parsedCourses,
+          feeStatus: body.feeStatus || current.feeStatus || 'Paid'
         };
 
         students[index] = updatedStudent;
@@ -220,7 +352,7 @@ const server = http.createServer(async (req, res) => {
 function startServer(portToTry) {
   server.listen(portToTry, () => {
     console.log(`===================================================`);
-    console.log(`🎓 Student Records HTTP Server running!`);
+    console.log(`🎓 Academic Student Records HTTP Server running!`);
     console.log(`🌐 Dashboard: http://localhost:${portToTry}`);
     console.log(`📡 REST API:  http://localhost:${portToTry}/api/students`);
     console.log(`===================================================`);
@@ -237,4 +369,3 @@ server.on('error', (err) => {
 });
 
 startServer(PORT);
-

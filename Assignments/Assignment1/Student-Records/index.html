@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Records Management System | Assignment 1</title>
+  <title>Academic Student Portal & Records System | Assignment 1</title>
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +22,8 @@
       --warning-light: #fffbeb;
       --danger: #ef4444;
       --danger-light: #fef2f2;
+      --gold: #d97706;
+      --gold-bg: #fef3c7;
       --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
       --body-bg: #f8fafc;
       --card-bg: #ffffff;
@@ -57,7 +59,7 @@
     }
 
     .header-container {
-      max-width: 1280px;
+      max-width: 1320px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -69,23 +71,23 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
 
     .brand-icon {
       background: rgba(255, 255, 255, 0.15);
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       backdrop-filter: blur(10px);
     }
 
     .brand-title h1 {
-      font-size: 1.4rem;
+      font-size: 1.45rem;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
@@ -94,6 +96,12 @@
       font-size: 0.82rem;
       color: #94a3b8;
       font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
 
     .server-status {
@@ -124,7 +132,7 @@
 
     /* Main Container */
     main {
-      max-width: 1280px;
+      max-width: 1320px;
       width: 100%;
       margin: 2rem auto;
       padding: 0 1.5rem;
@@ -134,7 +142,7 @@
     /* Analytics Dashboard Cards */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1.25rem;
       margin-bottom: 2rem;
     }
@@ -142,8 +150,8 @@
     .stat-card {
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 1.5rem;
-      border: 1fr solid var(--border);
+      padding: 1.35rem 1.5rem;
+      border: 1px solid var(--border);
       box-shadow: var(--shadow);
       display: flex;
       justify-content: space-between;
@@ -157,9 +165,9 @@
     }
 
     .stat-info p {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 0.25rem;
@@ -185,6 +193,7 @@
     .stat-icon.indigo { background: #e0e7ff; color: #4338ca; }
     .stat-icon.emerald { background: #dcfce7; color: #15803d; }
     .stat-icon.amber { background: #fef3c7; color: #b45309; }
+    .stat-icon.rose { background: #ffe4e6; color: #e11d48; }
 
     /* Control Panel */
     .control-panel {
@@ -203,14 +212,16 @@
     .search-filter-group {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.85rem;
       flex: 1;
-      min-width: 280px;
+      min-width: 320px;
+      flex-wrap: wrap;
     }
 
     .search-box {
       position: relative;
       flex: 1;
+      min-width: 220px;
     }
 
     .search-box i {
@@ -240,7 +251,7 @@
       padding: 0.65rem 1rem;
       border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       background-color: white;
       outline: none;
       cursor: pointer;
@@ -249,6 +260,11 @@
 
     .filter-select:focus {
       border-color: var(--primary);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
     }
 
     .btn {
@@ -262,6 +278,7 @@
       border: none;
       cursor: pointer;
       transition: all 0.2s ease;
+      text-decoration: none;
     }
 
     .btn-primary {
@@ -275,22 +292,15 @@
       transform: translateY(-1px);
     }
 
-    .btn-secondary {
-      background-color: #f1f5f9;
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--border);
       color: var(--text-main);
     }
 
-    .btn-secondary:hover {
-      background-color: #e2e8f0;
-    }
-
-    .btn-danger {
-      background-color: var(--danger);
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background-color: #dc2626;
+    .btn-outline:hover {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
     }
 
     /* Table Component */
@@ -321,6 +331,23 @@
       letter-spacing: 0.05em;
       color: var(--text-muted);
       border-bottom: 1px solid var(--border);
+      user-select: none;
+    }
+
+    th.sortable {
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    th.sortable:hover {
+      background-color: #f1f5f9;
+      color: var(--primary);
+    }
+
+    th i.sort-icon {
+      margin-left: 0.35rem;
+      font-size: 0.75rem;
+      opacity: 0.5;
     }
 
     td {
@@ -345,20 +372,48 @@
       background: var(--primary-light);
       padding: 0.25rem 0.5rem;
       border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .student-info {
+      display: flex;
+      flex-direction: column;
     }
 
     .student-name {
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-main);
     }
 
+    .student-email {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
     .badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
       border-radius: 20px;
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
+    }
+
+    .badge-deans {
+      background: var(--gold-bg);
+      color: var(--gold);
+    }
+
+    .badge-good {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .badge-warning {
+      background: var(--danger-light);
+      color: var(--danger);
     }
 
     .badge-active {
@@ -367,13 +422,56 @@
     }
 
     .badge-inactive {
-      background: var(--danger-light);
-      color: var(--danger);
+      background: #f1f5f9;
+      color: var(--text-muted);
     }
 
-    .gpa-pill {
+    /* Attendance Bar */
+    .attendance-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 140px;
+    }
+
+    .attendance-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .attendance-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .attendance-bar-fill.high { background: var(--success); }
+    .attendance-bar-fill.mid { background: var(--warning); }
+    .attendance-bar-fill.low { background: var(--danger); }
+
+    .attendance-val {
       font-weight: 700;
-      color: #0284c7;
+      font-size: 0.85rem;
+      width: 42px;
+      text-align: right;
+    }
+
+    .courses-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+
+    .course-tag {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
     }
 
     .action-btns {
@@ -409,13 +507,13 @@
 
     /* Empty State */
     .empty-state {
-      padding: 3rem 1.5rem;
+      padding: 3.5rem 1.5rem;
       text-align: center;
       color: var(--text-muted);
     }
 
     .empty-state i {
-      font-size: 3rem;
+      font-size: 3.5rem;
       margin-bottom: 1rem;
       color: #cbd5e1;
     }
@@ -423,11 +521,8 @@
     /* Modal Component */
     .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(15, 23, 42, 0.5);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.55);
       backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
@@ -447,11 +542,14 @@
       background: white;
       border-radius: var(--radius);
       width: 100%;
-      max-width: 520px;
+      max-width: 580px;
       box-shadow: var(--shadow-lg);
       transform: translateY(20px);
       transition: transform 0.25s ease;
       overflow: hidden;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .modal-overlay.active .modal {
@@ -468,8 +566,8 @@
     }
 
     .modal-header h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.15rem;
+      font-weight: 800;
     }
 
     .close-modal {
@@ -482,6 +580,7 @@
 
     .modal-body {
       padding: 1.5rem;
+      overflow-y: auto;
     }
 
     .form-grid {
@@ -494,7 +593,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .form-group.full {
@@ -531,8 +630,7 @@
     /* Toast Notification */
     .toast-container {
       position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
+      bottom: 1.5rem; right: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -549,7 +647,7 @@
       align-items: center;
       gap: 0.75rem;
       font-size: 0.9rem;
-      font-weight: 500;
+      font-weight: 600;
       animation: slideIn 0.3s ease;
     }
 
@@ -582,13 +680,15 @@
           <i class="fa-solid fa-graduation-cap"></i>
         </div>
         <div class="brand-title">
-          <h1>Student Records System</h1>
-          <p>Full-Stack Node.js HTTP Server & REST API | Assignment 1</p>
+          <h1>Academic Student Portal & Records</h1>
+          <p>Node.js HTTP Server & Custom REST API | Assignment 1</p>
         </div>
       </div>
-      <div class="server-status">
-        <span class="status-dot"></span>
-        <span>HTTP Server Active (Port 3000)</span>
+      <div class="header-actions">
+        <div class="server-status">
+          <span class="status-dot"></span>
+          <span>HTTP Server Active (Port 3000)</span>
+        </div>
       </div>
     </div>
   </header>
@@ -619,21 +719,31 @@
 
       <div class="stat-card">
         <div class="stat-info">
-          <p>Departments</p>
-          <h2 id="stat-depts">0</h2>
+          <p>Avg Attendance</p>
+          <h2 id="stat-attendance">0%</h2>
         </div>
         <div class="stat-icon emerald">
-          <i class="fa-solid fa-building-columns"></i>
+          <i class="fa-solid fa-clipboard-user"></i>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-info">
-          <p>Active Ratio</p>
-          <h2 id="stat-active">0%</h2>
+          <p>Dean's List</p>
+          <h2 id="stat-deans">0</h2>
         </div>
         <div class="stat-icon amber">
-          <i class="fa-solid fa-user-check"></i>
+          <i class="fa-solid fa-award"></i>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-info">
+          <p>At-Risk Students</p>
+          <h2 id="stat-risk">0</h2>
+        </div>
+        <div class="stat-icon rose">
+          <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
       </div>
     </div>
@@ -643,8 +753,9 @@
       <div class="search-filter-group">
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="search-input" placeholder="Search by name, roll no, or email...">
+          <input type="text" id="search-input" placeholder="Search by name, roll number, or email...">
         </div>
+
         <select id="filter-dept" class="filter-select">
           <option value="ALL">All Departments</option>
           <option value="Computer Science">Computer Science</option>
@@ -653,11 +764,24 @@
           <option value="Information Technology">Information Technology</option>
           <option value="Civil Engineering">Civil Engineering</option>
         </select>
+
+        <select id="filter-standing" class="filter-select">
+          <option value="ALL">All Standings</option>
+          <option value="Dean's List">Dean's List</option>
+          <option value="Good Standing">Good Standing</option>
+          <option value="Academic Warning">Academic Warning</option>
+          <option value="AT_RISK">At-Risk (<75% Att.)</option>
+        </select>
       </div>
 
-      <button class="btn btn-primary" onclick="openAddModal()">
-        <i class="fa-solid fa-plus"></i> Add New Student
-      </button>
+      <div class="btn-group">
+        <a href="/api/students/export" class="btn btn-outline" download="students_records.csv" title="Download Records as CSV">
+          <i class="fa-solid fa-file-csv"></i> Export CSV
+        </a>
+        <button class="btn btn-primary" onclick="openAddModal()">
+          <i class="fa-solid fa-plus"></i> Add Student
+        </button>
+      </div>
     </div>
 
     <!-- Student Table Card -->
@@ -666,13 +790,20 @@
         <table>
           <thead>
             <tr>
-              <th>Roll Number</th>
-              <th>Student Name</th>
-              <th>Email</th>
-              <th>Department</th>
-              <th>Academic Year</th>
-              <th>GPA</th>
-              <th>Status</th>
+              <th class="sortable" onclick="handleSort('rollNo')">
+                Roll No <i class="fa-solid fa-sort sort-icon" id="sort-icon-rollNo"></i>
+              </th>
+              <th class="sortable" onclick="handleSort('name')">
+                Student <i class="fa-solid fa-sort sort-icon" id="sort-icon-name"></i>
+              </th>
+              <th>Department & Year</th>
+              <th class="sortable" onclick="handleSort('gpa')">
+                GPA & Standing <i class="fa-solid fa-sort sort-icon" id="sort-icon-gpa"></i>
+              </th>
+              <th class="sortable" onclick="handleSort('attendance')">
+                Attendance <i class="fa-solid fa-sort sort-icon" id="sort-icon-attendance"></i>
+              </th>
+              <th>Fee Status</th>
               <th style="text-align: right;">Actions</th>
             </tr>
           </thead>
@@ -684,7 +815,7 @@
       <div id="empty-state" class="empty-state" style="display: none;">
         <i class="fa-solid fa-folder-open"></i>
         <h3>No Student Records Found</h3>
-        <p>Try adjusting your search criteria or add a new student record.</p>
+        <p>Try adjusting your search query or filter criteria.</p>
       </div>
     </div>
   </main>
@@ -702,17 +833,17 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="rollNo">Roll Number *</label>
-              <input type="text" id="rollNo" placeholder="e.g. CS202609" required>
+              <input type="text" id="rollNo" placeholder="e.g. CS202611" required>
             </div>
 
             <div class="form-group">
               <label for="name">Full Name *</label>
-              <input type="text" id="name" placeholder="e.g. Rohan Verma" required>
+              <input type="text" id="name" placeholder="e.g. Aarav Sharma" required>
             </div>
 
             <div class="form-group full">
               <label for="email">Email Address *</label>
-              <input type="email" id="email" placeholder="e.g. rohan@university.edu" required>
+              <input type="email" id="email" placeholder="e.g. aarav@university.edu" required>
             </div>
 
             <div class="form-group">
@@ -738,7 +869,34 @@
 
             <div class="form-group">
               <label for="gpa">GPA (0.0 - 4.0) *</label>
-              <input type="number" id="gpa" step="0.01" min="0" max="4.0" placeholder="3.75" required>
+              <input type="number" id="gpa" step="0.01" min="0" max="4.0" placeholder="3.85" required>
+            </div>
+
+            <div class="form-group">
+              <label for="attendance">Attendance (%) *</label>
+              <input type="number" id="attendance" step="0.1" min="0" max="100" placeholder="92.5" required>
+            </div>
+
+            <div class="form-group">
+              <label for="academicStanding">Academic Standing</label>
+              <select id="academicStanding">
+                <option value="Dean's List">Dean's List</option>
+                <option value="Good Standing">Good Standing</option>
+                <option value="Academic Warning">Academic Warning</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="feeStatus">Fee Status</label>
+              <select id="feeStatus">
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+
+            <div class="form-group full">
+              <label for="coursesEnrolled">Enrolled Courses (Comma Separated)</label>
+              <input type="text" id="coursesEnrolled" placeholder="e.g. Data Structures, Web Development, Algorithms">
             </div>
 
             <div class="form-group">
@@ -751,52 +909,116 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
           <button type="submit" class="btn btn-primary" id="save-btn">Save Student</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
+  <!-- Toast Container -->
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Footer -->
   <footer>
-    <p>&copy; 2026 Student Records System | FSD Assignment 1 | Built with Node.js & REST API</p>
+    <p>&copy; 2026 Academic Student Portal | FSD Assignment 1 | Built with Native Node.js & REST API</p>
   </footer>
 
   <!-- Client JavaScript -->
   <script>
     const API_BASE = '/api/students';
-    let allStudents = [];
+    let currentStudents = [];
+    let currentSort = { field: null, order: 'asc' };
 
     // Initialize application on DOM load
     document.addEventListener('DOMContentLoaded', () => {
-      fetchStudents();
+      loadDashboard();
 
       // Search & Filter Listeners
-      document.getElementById('search-input').addEventListener('input', filterStudents);
-      document.getElementById('filter-dept').addEventListener('change', filterStudents);
+      document.getElementById('search-input').addEventListener('input', debounce(loadDashboard, 300));
+      document.getElementById('filter-dept').addEventListener('change', loadDashboard);
+      document.getElementById('filter-standing').addEventListener('change', loadDashboard);
     });
 
-    // Fetch students from HTTP REST API
+    // Load Dashboard Data & Analytics
+    async function loadDashboard() {
+      await Promise.all([fetchStudents(), fetchStats()]);
+    }
+
+    // Fetch students with active filters & sorting
     async function fetchStudents() {
+      const search = document.getElementById('search-input').value.trim();
+      const dept = document.getElementById('filter-dept').value;
+      const standing = document.getElementById('filter-standing').value;
+
+      const params = new URLSearchParams();
+      if (search) params.append('search', search);
+      if (dept !== 'ALL') params.append('department', dept);
+      if (standing !== 'ALL') params.append('standing', standing);
+      if (currentSort.field) {
+        params.append('sort', currentSort.field);
+        params.append('order', currentSort.order);
+      }
+
       try {
-        const response = await fetch(API_BASE);
+        const response = await fetch(`${API_BASE}?${params.toString()}`);
         const result = await response.json();
         
         if (result.success) {
-          allStudents = result.data;
-          renderStudents(allStudents);
-          updateStats(allStudents);
+          currentStudents = result.data;
+          renderStudents(currentStudents);
         } else {
-          showToast(result.message || 'Failed to load records', 'error');
+          showToast(result.message || 'Failed to fetch student records', 'error');
         }
       } catch (error) {
         console.error('Error fetching students:', error);
-        showToast('Unable to connect to Node.js HTTP server', 'error');
+        showToast('Unable to connect to Node.js server', 'error');
       }
+    }
+
+    // Fetch Analytics Summary from REST API
+    async function fetchStats() {
+      try {
+        const response = await fetch('/api/students/stats');
+        const result = await response.json();
+
+        if (result.success) {
+          const stats = result.data;
+          document.getElementById('stat-total').textContent = stats.totalStudents;
+          document.getElementById('stat-gpa').textContent = stats.averageGpa.toFixed(2);
+          document.getElementById('stat-attendance').textContent = `${stats.averageAttendance}%`;
+          document.getElementById('stat-deans').textContent = stats.deansListCount;
+          document.getElementById('stat-risk').textContent = stats.atRiskCount;
+        }
+      } catch (err) {
+        console.error('Error fetching stats:', err);
+      }
+    }
+
+    // Handle Sorting by column
+    function handleSort(field) {
+      if (currentSort.field === field) {
+        currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.field = field;
+        currentSort.order = 'asc';
+      }
+
+      // Update sort icons
+      ['rollNo', 'name', 'gpa', 'attendance'].forEach(f => {
+        const icon = document.getElementById(`sort-icon-${f}`);
+        if (icon) {
+          if (f === currentSort.field) {
+            icon.className = `fa-solid fa-sort-${currentSort.order === 'asc' ? 'up' : 'down'} sort-icon`;
+            icon.style.opacity = '1';
+          } else {
+            icon.className = 'fa-solid fa-sort sort-icon';
+            icon.style.opacity = '0.4';
+          }
+        }
+      });
+
+      fetchStudents();
     }
 
     // Render Student Table
@@ -814,16 +1036,54 @@
 
       students.forEach(student => {
         const tr = document.createElement('tr');
+        
+        // Attendance Bar styling
+        const attVal = parseFloat(student.attendance || 0);
+        let attClass = 'high';
+        if (attVal < 75) attClass = 'low';
+        else if (attVal < 85) attClass = 'mid';
+
+        // Academic Standing Badge
+        let standingBadge = '';
+        if (student.academicStanding === "Dean's List" || student.gpa >= 3.75) {
+          standingBadge = `<span class="badge badge-deans"><i class="fa-solid fa-star"></i> Dean's List</span>`;
+        } else if (student.academicStanding === "Academic Warning" || attVal < 75) {
+          standingBadge = `<span class="badge badge-warning"><i class="fa-solid fa-circle-exclamation"></i> Warning</span>`;
+        } else {
+          standingBadge = `<span class="badge badge-good"><i class="fa-solid fa-check"></i> Good Standing</span>`;
+        }
+
+        // Courses Tags
+        const coursesHtml = (student.coursesEnrolled || []).map(c => `<span class="course-tag">${escapeHtml(c)}</span>`).join('');
+
         tr.innerHTML = `
           <td><span class="student-roll">${escapeHtml(student.rollNo)}</span></td>
-          <td><span class="student-name">${escapeHtml(student.name)}</span></td>
-          <td>${escapeHtml(student.email)}</td>
-          <td>${escapeHtml(student.department)}</td>
-          <td>${escapeHtml(student.year || '1st Year')}</td>
-          <td><span class="gpa-pill">${Number(student.gpa).toFixed(2)}</span></td>
           <td>
-            <span class="badge ${student.status === 'Active' ? 'badge-active' : 'badge-inactive'}">
-              ${escapeHtml(student.status)}
+            <div class="student-info">
+              <span class="student-name">${escapeHtml(student.name)}</span>
+              <span class="student-email">${escapeHtml(student.email)}</span>
+            </div>
+          </td>
+          <td>
+            <div><strong>${escapeHtml(student.department)}</strong></div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">${escapeHtml(student.year || '1st Year')}</div>
+            <div class="courses-list" style="margin-top: 0.25rem;">${coursesHtml}</div>
+          </td>
+          <td>
+            <div style="font-weight: 800; font-size: 1rem; color: var(--primary);">${Number(student.gpa).toFixed(2)}</div>
+            <div style="margin-top: 0.2rem;">${standingBadge}</div>
+          </td>
+          <td>
+            <div class="attendance-wrapper">
+              <div class="attendance-bar-bg">
+                <div class="attendance-bar-fill ${attClass}" style="width: ${Math.min(attVal, 100)}%;"></div>
+              </div>
+              <span class="attendance-val">${attVal.toFixed(1)}%</span>
+            </div>
+          </td>
+          <td>
+            <span class="badge ${student.feeStatus === 'Paid' ? 'badge-active' : 'badge-inactive'}">
+              ${escapeHtml(student.feeStatus || 'Paid')}
             </span>
           </td>
           <td style="text-align: right;">
@@ -841,65 +1101,33 @@
       });
     }
 
-    // Filter Students locally based on search input & dept filter
-    function filterStudents() {
-      const query = document.getElementById('search-input').value.toLowerCase().trim();
-      const selectedDept = document.getElementById('filter-dept').value;
-
-      const filtered = allStudents.filter(s => {
-        const matchesQuery = s.name.toLowerCase().includes(query) ||
-                             s.rollNo.toLowerCase().includes(query) ||
-                             s.email.toLowerCase().includes(query);
-        const matchesDept = selectedDept === 'ALL' || s.department === selectedDept;
-        return matchesQuery && matchesDept;
-      });
-
-      renderStudents(filtered);
-    }
-
-    // Update Analytics KPI Cards
-    function updateStats(students) {
-      document.getElementById('stat-total').textContent = students.length;
-
-      if (students.length > 0) {
-        const avgGpa = (students.reduce((acc, s) => acc + (parseFloat(s.gpa) || 0), 0) / students.length).toFixed(2);
-        document.getElementById('stat-gpa').textContent = avgGpa;
-
-        const depts = new Set(students.map(s => s.department));
-        document.getElementById('stat-depts').textContent = depts.size;
-
-        const activeCount = students.filter(s => s.status === 'Active').length;
-        const activePct = Math.round((activeCount / students.length) * 100);
-        document.getElementById('stat-active').textContent = `${activePct}%`;
-      } else {
-        document.getElementById('stat-gpa').textContent = '0.00';
-        document.getElementById('stat-depts').textContent = '0';
-        document.getElementById('stat-active').textContent = '0%';
-      }
-    }
-
     // Modal Control Functions
     function openAddModal() {
       document.getElementById('modal-title').textContent = 'Add New Student';
       document.getElementById('student-form').reset();
       document.getElementById('student-id').value = '';
       document.getElementById('rollNo').disabled = false;
+      document.getElementById('attendance').value = '88.0';
       document.getElementById('student-modal').classList.add('active');
     }
 
     function openEditModal(id) {
-      const student = allStudents.find(s => String(s.id) === String(id));
+      const student = currentStudents.find(s => String(s.id) === String(id));
       if (!student) return;
 
       document.getElementById('modal-title').textContent = 'Edit Student Record';
       document.getElementById('student-id').value = student.id;
       document.getElementById('rollNo').value = student.rollNo;
-      document.getElementById('rollNo').disabled = true; // Roll number is identifier
+      document.getElementById('rollNo').disabled = true;
       document.getElementById('name').value = student.name;
       document.getElementById('email').value = student.email;
       document.getElementById('department').value = student.department;
       document.getElementById('year').value = student.year || '1st Year';
       document.getElementById('gpa').value = student.gpa;
+      document.getElementById('attendance').value = student.attendance || 85.0;
+      document.getElementById('academicStanding').value = student.academicStanding || "Good Standing";
+      document.getElementById('feeStatus').value = student.feeStatus || 'Paid';
+      document.getElementById('coursesEnrolled').value = (student.coursesEnrolled || []).join(', ');
       document.getElementById('status').value = student.status || 'Active';
 
       document.getElementById('student-modal').classList.add('active');
@@ -909,7 +1137,7 @@
       document.getElementById('student-modal').classList.remove('active');
     }
 
-    // Form Submit Handler (Add or Update)
+    // Form Submit Handler
     async function handleFormSubmit(event) {
       event.preventDefault();
       const id = document.getElementById('student-id').value;
@@ -922,6 +1150,10 @@
         department: document.getElementById('department').value,
         year: document.getElementById('year').value,
         gpa: parseFloat(document.getElementById('gpa').value),
+        attendance: parseFloat(document.getElementById('attendance').value),
+        academicStanding: document.getElementById('academicStanding').value,
+        feeStatus: document.getElementById('feeStatus').value,
+        coursesEnrolled: document.getElementById('coursesEnrolled').value,
         status: document.getElementById('status').value
       };
 
@@ -937,9 +1169,9 @@
         const result = await response.json();
 
         if (result.success) {
-          showToast(isEdit ? 'Student record updated!' : 'New student added successfully!', 'success');
+          showToast(isEdit ? 'Student record updated successfully!' : 'New student added successfully!', 'success');
           closeModal();
-          fetchStudents();
+          loadDashboard();
         } else {
           showToast(result.message || 'Operation failed', 'error');
         }
@@ -953,15 +1185,12 @@
       if (!confirm(`Are you sure you want to delete the record for "${name}"?`)) return;
 
       try {
-        const response = await fetch(`${API_BASE}?id=${id}`, {
-          method: 'DELETE'
-        });
-
+        const response = await fetch(`${API_BASE}?id=${id}`, { method: 'DELETE' });
         const result = await response.json();
 
         if (result.success) {
           showToast('Student record deleted successfully', 'success');
-          fetchStudents();
+          loadDashboard();
         } else {
           showToast(result.message || 'Failed to delete record', 'error');
         }
@@ -970,7 +1199,7 @@
       }
     }
 
-    // Helper Utility: Show Toast Notification
+    // Utilities
     function showToast(message, type = 'info') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
@@ -988,16 +1217,23 @@
       }, 3500);
     }
 
-    // Helper Utility: Escape HTML to prevent XSS
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/[&<>"']/g, match => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       })[match]);
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
     }
   </script>
 </body>

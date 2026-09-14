@@ -1,32 +1,38 @@
-# 🎓 Student Records Management System (Assignment 1)
+# 🎓 Academic Student Portal & Records System (Assignment 1)
 
-A full-stack web application built with **Node.js HTTP Server**, custom **REST API**, file-based **JSON Database** (`students.json`), and an **Interactive Web UI** (`index.html`).
+An enhanced full-stack web application built with **Node.js HTTP Server**, custom **REST API**, file-based **JSON Database** (`students.json`), and an **Interactive Dashboard UI** (`index.html`).
 
 ---
 
 ## 🌟 Key Features
 
 1. **Custom Node.js HTTP Server (`server.js`)**:
-   - Built using native Node.js `http`, `fs`, and `path` modules without third-party web frameworks.
-   - Dynamic MIME type handling for HTML, CSS, and JSON endpoints.
-   - CORS support for cross-origin client requests.
+   - Built using native Node.js `http`, `fs`, and `path` modules without express or third-party web frameworks.
+   - Dynamic MIME type handling for HTML, CSS, JSON, and CSV endpoints.
+   - CORS support for cross-origin requests.
 
-2. **RESTful JSON API**:
-   - `GET /api/students`: Fetch all student records.
+2. **RESTful JSON & Analytics API**:
+   - `GET /api/students`: Fetch all student records with backend search (`?search=`), filtering (`?department=`, `?standing=`, `?status=`), and sorting (`?sort=gpa|attendance|name|rollNo&order=asc|desc`).
    - `GET /api/students/:id`: Fetch a specific student record by ID.
-   - `POST /api/students`: Add a new student record (saves to `students.json`).
-   - `PUT /api/students/:id`: Update an existing student record (saves to `students.json`).
-   - `DELETE /api/students/:id`: Delete a student record (updates `students.json`).
+   - `GET /api/students/stats`: Fetch real-time aggregated metrics (total count, avg GPA, avg attendance %, Dean's list count, at-risk count, and department breakdown).
+   - `GET /api/students/export`: Dynamic CSV exporter for downloading records directly.
+   - `POST /api/students`: Add a new student record (with validation, auto-generated ID, and auto-derived standing).
+   - `PUT /api/students/:id`: Update an existing student record.
+   - `DELETE /api/students/:id`: Delete a student record.
 
-3. **Persistent Data Storage (`students.json`)**:
-   - Automatically initializes dataset if missing.
-   - Real-time file read/write synchronization for all CRUD operations.
+3. **Rich Data Model (`students.json`)**:
+   - Student Roll Number, Full Name, Email Address, Department, Academic Year.
+   - **GPA & Academic Standing** (Dean's List, Good Standing, Academic Warning).
+   - **Attendance Tracking** (Percentage & visual progress bars with low-attendance warnings).
+   - **Enrolled Courses** (List of courses).
+   - **Fee Payment Status** (Paid / Pending).
 
 4. **Responsive Frontend Dashboard (`index.html`)**:
-   - Real-time Analytics Cards (Total Students, Average GPA, Active Status, Departments).
-   - Live Search & Department Filter dropdown.
+   - 5 Real-Time KPI Analytics Cards (Total Students, Class Avg GPA, Avg Attendance, Dean's List Scholars, At-Risk Warning count).
+   - Interactive table header sorting (Roll Number, Name, GPA, Attendance).
+   - Multi-criteria Filtering (Search by query, filter by Department, filter by Academic Standing / At-Risk).
+   - Direct CSV Export button.
    - Modal Form with client-side validation for Adding & Editing records.
-   - Instant UI update & Toast notifications.
 
 ---
 
